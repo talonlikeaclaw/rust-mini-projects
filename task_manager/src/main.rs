@@ -39,4 +39,11 @@ impl TaskManager {
     fn list_tasks(&mut self) -> Vec<&Task> {
         self.tasks.values().collect()
     }
+
+    fn filter_by_tag(&self, tag: &str) -> Vec<&Task> {
+        self.tasks
+            .values()
+            .filter(|task| task.tags.contains(tag))
+            .collect()
+    }
 }
