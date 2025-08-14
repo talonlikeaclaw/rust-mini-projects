@@ -24,4 +24,15 @@ impl TaskManager {
             next_id: 1,
         }
     }
+
+    fn add_task(&mut self, name: String, description: String, tags: HashSet<String>) {
+        let task = Task {
+            id: self.next_id,
+            name,
+            description,
+            tags: tags.into_iter().collect(),
+        };
+        self.tasks.insert(self.next_id, task);
+        self.next_id += 1;
+    }
 }
