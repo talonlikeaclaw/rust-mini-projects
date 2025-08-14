@@ -1,10 +1,13 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    io::Error,
+};
 
 fn main() {
     println!("Hello, world!");
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Task {
     id: u32,
     name: String,
@@ -36,6 +39,14 @@ impl TaskManager {
         };
         self.tasks.insert(self.next_id, task);
         self.next_id += 1;
+    }
+
+    fn remove_task(&mut self, task_id: u32) -> Result<(), Error> {
+        if self.tasks.remove(&task_id).is_some() {
+            Ok(())
+        } else {
+            Err(Error::new(std::io::ErrorKind::NotFound, "Task not found!"))
+        }
     }
 
     fn list_tasks(&mut self) -> Vec<&Task> {
