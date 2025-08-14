@@ -10,6 +10,7 @@ struct Task {
     name: String,
     description: String,
     tags: HashSet<String>,
+    done: bool,
 }
 
 struct TaskManager {
@@ -31,6 +32,7 @@ impl TaskManager {
             name,
             description,
             tags: tags.into_iter().collect(),
+            done: false,
         };
         self.tasks.insert(self.next_id, task);
         self.next_id += 1;
