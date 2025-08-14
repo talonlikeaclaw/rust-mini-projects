@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 fn main() {
     println!("Hello, world!");
@@ -10,4 +10,9 @@ struct Task {
     name: String,
     description: String,
     tags: HashSet<String>,
+}
+
+struct TaskManager {
+    tasks: HashMap<u32, Task>,
+    next_id: u32,
 }
