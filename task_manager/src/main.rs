@@ -25,7 +25,7 @@ impl TaskManager {
         }
     }
 
-    fn add_task(&mut self, name: String, description: String, tags: HashSet<String>) {
+    fn add_task(&mut self, name: String, description: String, tags: Vec<String>) {
         let task = Task {
             id: self.next_id,
             name,
@@ -34,5 +34,9 @@ impl TaskManager {
         };
         self.tasks.insert(self.next_id, task);
         self.next_id += 1;
+    }
+
+    fn list_tasks(&mut self) -> Vec<&Task> {
+        self.tasks.values().collect()
     }
 }
