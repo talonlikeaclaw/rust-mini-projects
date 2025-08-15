@@ -78,6 +78,17 @@ impl TaskRepo {
             }
         }
     }
+
+    /// Updates a task's done field to true.
+    fn complete_task(&mut self, task_id: u32) -> Result<(), Error> {
+        if let Some(task) = self.tasks.get_mut(&task_id) {
+            task.done == true;
+            Ok(())
+        } else {
+            Err(Error::new(std::io::ErrorKind::NotFound, "Task not found!"))
+        }
+    }
+
     /// Deletes a task from the task list.
     fn remove_task(&mut self, task_id: u32) -> Result<(), Error> {
         if self.tasks.remove(&task_id).is_some() {
