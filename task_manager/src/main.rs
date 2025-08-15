@@ -83,6 +83,7 @@ enum Commands {
     Show {
         /// The id of the task to display.
         id: u32,
+
         /// Output as JSON instead of table.
         #[arg(long)]
         json: bool,
@@ -93,7 +94,28 @@ enum Commands {
         /// The id of the task to complete.
         id: u32,
     },
-    Update {},
+
+    /// Updates fields of a task
+    Update {
+        /// The id of the task to update.
+        id: u32,
+
+        /// The new name of the task.
+        #[arg(long)]
+        name: Option<String>,
+
+        /// The new description of the task.
+        #[arg(long)]
+        description: Option<String>,
+
+        /// The new tags of the task.
+        #[arg(short = 't', long = "tag", value_delimiter = ',')]
+        tags: Option<Vec<String>>,
+
+        /// The new status of the task.
+        #[arg(long)]
+        status: Option<StatusArg>,
+    },
 
     /// Remove a task by id
     Remove {
