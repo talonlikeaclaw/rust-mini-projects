@@ -1,0 +1,25 @@
+{
+  "tasks": {
+    "1": {
+      "id": 1,
+      "name": "Hello World!",
+      "description": "Testing 123..",
+      "tags": [
+        "test",
+        "note"
+      ],
+      "status": "Complete"
+    },
+    "2": {
+      "id": 2,
+      "name": "Second!",
+      "description": "Am I able to save to JSON?",
+      "tags": [
+        "persists",
+        "test"
+      ],
+      "status": "Upcoming"
+    }
+  },
+  "next_id": 3
+}
