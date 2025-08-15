@@ -40,14 +40,6 @@ impl TaskRepo {
         tasks
     }
 
-    /// Reads all tasks with a particular tag.
-    pub fn filter_by_tag(&self, tag: &str) -> Vec<&Task> {
-        self.tasks
-            .values()
-            .filter(|task| task.tags.contains(tag))
-            .collect()
-    }
-
     /// Updates a task's name, description, and tags via id.
     pub fn update_task(
         &mut self,
