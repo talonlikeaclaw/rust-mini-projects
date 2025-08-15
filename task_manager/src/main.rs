@@ -1,4 +1,6 @@
+use clap::{Parser, Subcommand, ValueEnum};
 use prelude::*;
+use std::path::PathBuf;
 
 mod models;
 mod repo;
@@ -29,6 +31,26 @@ impl From<StatusArg> for Status {
             StatusArg::StandBy => Status::StandBy,
         }
     }
+}
+
+#[derive(Parser, Debug)]
+#[command(name = "tasks", version, about = "A tiny task tracker")]
+struct Cli {
+    /// Path to the data file (JSON)
+    #[arg(short = 'f', long = "file", default_value = "tasks.json")]
+    data: PathBuf,
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    Add {},
+    List {},
+    Show {},
+    Complete {},
+    Update {},
+    Remove {},
 }
 
 fn main() {
