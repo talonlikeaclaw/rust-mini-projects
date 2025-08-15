@@ -178,7 +178,13 @@ fn main() {
             }
             None => eprintln!("Task #{id} not found"),
         },
-        Commands::Complete { id } => {}
+        Commands::Complete { id } => match repo.complete_task(id) {
+            Ok(_) => {
+                println!("Task #{id} marked complete");
+                dirty = true;
+            }
+            Err(e) => eprintln!("Error: {e}"),
+        },
         Commands::Update {
             id,
             name,
