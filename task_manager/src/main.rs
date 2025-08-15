@@ -141,7 +141,15 @@ fn main() {
             description,
             tags,
             status,
-        } => {}
+        } => {
+            let id = repo.next_id;
+            repo.add_task(name, description, tags);
+            if let Some(s) = status {
+                let _ = repo.update_task(id, None, None, None, Some(s.into()));
+            }
+            println!("Created task #{id}");
+            dirty = true;
+        }
         Commands::List { status, tag, json } => {}
         Commands::Show { id, json } => {}
         Commands::Complete { id } => {}
