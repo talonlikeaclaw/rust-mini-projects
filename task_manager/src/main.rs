@@ -63,7 +63,21 @@ enum Commands {
         #[arg(long)]
         status: Option<StatusArg>,
     },
-    List {},
+
+    /// List tasks (optionally filter by status and/or tags)
+    List {
+        /// The status to filter by.
+        #[arg(long)]
+        status: Option<StatusArg>,
+
+        /// The tag to filter by.
+        #[arg(short = 't', long = "tag")]
+        tag: Option<String>,
+
+        /// Output as JSON instead of table.
+        #[arg(long)]
+        json: bool,
+    },
     Show {},
     Complete {},
     Update {},
