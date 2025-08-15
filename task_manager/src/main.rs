@@ -4,7 +4,21 @@ use std::{
 };
 
 fn main() {
-    println!("Hello, world!");
+    // Testing
+    let mut repo: TaskRepo = TaskRepo::new();
+    repo.add_task(
+        "Hello World!".to_string(),
+        "Testing 123..".to_string(),
+        vec!["test".to_string(), "note".to_string()],
+    );
+    let complete: Result<(), Error> = repo.complete_task(1);
+    if complete.unwrap() == () {
+        println!("Task marked as done!");
+    }
+    let tasks: Vec<&Task> = repo.list_tasks();
+    if let Some(task) = tasks.first() {
+        println!("{:?}", task);
+    }
 }
 
 /// Represent a singular task.
