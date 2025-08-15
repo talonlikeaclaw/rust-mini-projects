@@ -224,7 +224,10 @@ fn print_table(tasks: &[&Task]) {
         return;
     }
 
-    println!("{:<4}  {:<12}  {:<10}  {}", "ID", "STATUS", "NAME", "TAGS");
+    println!(
+        "{:<4}  {:<15}  {:<20} {:<40} {}",
+        "ID", "STATUS", "NAME", "DESCRIPTION", "TAGS"
+    );
 
     for t in tasks {
         let mut tags: Vec<&str> = t.tags.iter().map(String::as_str).collect();
@@ -232,10 +235,11 @@ fn print_table(tasks: &[&Task]) {
         let tags_str = tags.join(",");
 
         println!(
-            "{:<4}  {:<12}  {:<10}  {}",
+            "{:<4}  {:<15}  {:<20} {:<40}  {}",
             t.id,
             fmt_status(&t.status),
             t.name,
+            t.description,
             tags_str
         );
     }
@@ -245,8 +249,8 @@ fn print_table(tasks: &[&Task]) {
 fn fmt_status(s: &Status) -> &'static str {
     match s {
         Status::Upcoming => "Upcoming",
-        Status::InProgress => "InProgress",
+        Status::InProgress => "In Progress",
         Status::Complete => "Complete",
-        Status::StandBy => "StandBy",
+        Status::StandBy => "Stand By",
     }
 }
