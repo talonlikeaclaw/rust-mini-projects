@@ -151,3 +151,13 @@ fn main() {
         }
     }
 }
+
+/// Formats a status enum as a str.
+fn fmt_status(s: &Status) -> &'static str {
+      match s {
+          Status::Upcoming => "Upcoming",
+          Status::InProgress => "InProgress",
+          Status::Complete => "Complete",
+          Status::StandBy => "StandBy",
+      }
+}
