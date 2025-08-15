@@ -10,6 +10,27 @@ mod prelude {
     pub use std::io::Error;
 }
 
+/// CLI task status value enum.
+#[derive(Copy, Clone, Debug, ValueEnum)]
+enum StatusArg {
+    Upcoming,
+    InProgress,
+    Complete,
+    StandBy,
+}
+
+impl From<StatusArg> for Status {
+    /// Convert from CLI task status to domain task status enum.
+    fn from(s: StatusArg) -> Self {
+        match s {
+            StatusArg::Upcoming => Status::Upcoming,
+            StatusArg::InProgress => Status::InProgress,
+            StatusArg::Complete => Status::Complete,
+            StatusArg::StandBy => Status::StandBy,
+        }
+    }
+}
+
 fn main() {
     let path = "tasks.json";
     let mut repo: TaskRepo = match TaskRepo::load_from_path(path) {
