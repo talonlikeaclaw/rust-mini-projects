@@ -191,8 +191,23 @@ fn main() {
             description,
             tags,
             status,
-        } => {}
-        Commands::Remove { id } => {}
+        } => {
+            let result = repo.update_task(id, name, description, tags, status.map(|s| s.into()));
+            match result {
+                Ok(_) => {
+                    println!("Updated task #{id}");
+                    dirty = true;
+                }
+                Err(e) => eprintln!("Error: {e}"),
+            }
+        }
+        Commands::Remove { id } => match repo.remove_task(id) {
+            Ok(_) => {
+                println!("Updated task #{id}");
+                dirty = true;
+            }
+            Err(e) => eprintln!("Error: {e}"),
+        },
     }
 
     // Save only if task was mutated.
