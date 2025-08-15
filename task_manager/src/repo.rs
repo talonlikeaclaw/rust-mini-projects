@@ -1,6 +1,11 @@
 use crate::prelude::*;
+use serde::{Deserialize, Serialize};
+use std::fs::File;
+use std::io::{BufReader, BufWriter};
+use std::path::Path;
 
 /// Represents the list of tasks.
+#[derive(Serialize, Deserialize)]
 pub struct TaskRepo {
     pub tasks: HashMap<u32, Task>,
     pub next_id: u32,
@@ -90,5 +95,29 @@ impl TaskRepo {
         } else {
             Err(Error::new(std::io::ErrorKind::NotFound, "Task not found!"))
         }
+    }
+
+    /// Save repo to JSON at `path`.
+    pub fn save_to_path<P: AsRef<Path>>(&self, path: P) -> Result<(), Error> {
+        let file = File::create(path.as_ref())?;
+        let writer = BufWriter::new(file);
+        serde_json::to_writer_pretty(writer, &self)
+            .map_err(|e| Error::new(std::io::ErrorKind::Other, e.to_string()))
+    }
+
+    /// Load repo from JSON at `path`.
+    pub fn load_from_path<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
+        let file = File::open(path.as_ref())?;
+        let reader = BufReader::new(file);
+        let mut repo: TaskRepo = serde_json::from_reader(reader)
+            .map_err(|e| Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+
+        // Ensure next_id is valid even if file was edited.
+        if let Some(max_id) = repo.tasks.keys().max() {
+            repo.next_id = repo.next_id.max(max_id + 1);
+        } else {
+            repo.next_id = 1;
+        }
+        Ok(repo)
     }
 }
