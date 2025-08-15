@@ -45,7 +45,24 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    Add {},
+    /// Add a new task
+    Add {
+        /// Name/title of the task.
+        #[arg(short = 'n', long)]
+        name: String,
+
+        /// Description of the task.
+        #[arg(short = 'd', long, default_value = "")]
+        description: String,
+
+        /// Tags (repeat: -t a -t b) or comma-separarted: -t a,b
+        #[arg(short = 't', long = "tag", value_delimiter = ',')]
+        tags: Vec<String>,
+
+        /// Optional initial status
+        #[arg(long)]
+        status: Option<StatusArg>,
+    },
     List {},
     Show {},
     Complete {},
