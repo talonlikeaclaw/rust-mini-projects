@@ -150,7 +150,25 @@ fn main() {
             println!("Created task #{id}");
             dirty = true;
         }
-        Commands::List { status, tag, json } => {}
+        Commands::List { status, tag, json } => {
+            let mut tasks: Vec<&Task> = repo.list_tasks();
+
+            if let Some(s) = status {
+                let s: Status = s.into();
+                tasks.retain(|t| t.status == s);
+            }
+            if let Some(tag) = tag {
+                tasks.retain(|t| t.tags.contains(&tag));
+            }
+
+            tasks.sort_by_key(|t| t.id);
+
+            if json {
+                println!("{}", serde_json::to_string_pretty(&tasks).unwrap());
+            } else {
+                print_table(&tasks);
+            }
+        }
         Commands::Show { id, json } => {}
         Commands::Complete { id } => {}
         Commands::Update {
