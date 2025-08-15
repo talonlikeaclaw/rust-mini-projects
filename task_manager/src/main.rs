@@ -78,7 +78,16 @@ enum Commands {
         #[arg(long)]
         json: bool,
     },
-    Show {},
+
+    /// Show one task by id
+    Show {
+        /// The id of the task to display.
+        id: u32,
+        /// Output as JSON instead of table.
+        #[arg(long)]
+        json: bool,
+    },
+
     Complete {},
     Update {},
     Remove {},
