@@ -46,7 +46,7 @@ impl TaskRepo {
     }
 
     /// Reads all tasks in the list of tasks.
-    fn list_tasks(&mut self) -> Vec<&Task> {
+    fn list_tasks(&self) -> Vec<&Task> {
         self.tasks.values().collect()
     }
 
@@ -58,6 +58,26 @@ impl TaskRepo {
             .collect()
     }
 
+    /// Updates a task's name, description, and tags via id.
+    fn update_task(
+        &mut self,
+        task_id: u32,
+        new_name: Option<String>,
+        new_description: Option<String>,
+        new_tags: Option<Vec<String>>,
+    ) {
+        if let Some(task) = self.tasks.get_mut(&task_id) {
+            if let Some(name) = new_name {
+                task.name = name;
+            }
+            if let Some(description) = new_description {
+                task.description = description;
+            }
+            if let Some(tags) = new_tags {
+                task.tags = tags.into_iter().collect();
+            }
+        }
+    }
     /// Deletes a task from the task list.
     fn remove_task(&mut self, task_id: u32) -> Result<(), Error> {
         if self.tasks.remove(&task_id).is_some() {
