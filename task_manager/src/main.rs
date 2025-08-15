@@ -125,36 +125,29 @@ enum Commands {
 }
 
 fn main() {
-    let path = "tasks.json";
-    let mut repo: TaskRepo = match TaskRepo::load_from_path(path) {
-        Ok(res) => res,
+    let cli = Cli::parse();
+
+    // Load rep (or start fresh).
+    let mut repo: TaskRepo = match TaskRepo::load_from_path(&cli.data) {
+        Ok(r) => r,
         Err(_) => TaskRepo::new(),
-    };
-
-    // Testing
-    // repo.add_task(
-    //     "Second!".to_string(),
-    //     "Am I able to save to JSON?".to_string(),
-    //     vec!["test".to_string(), "persists".to_string()],
-    // );
-
-    // match repo.complete_task(1) {
-    //     Ok(_) => println!("Task marked as done!"),
-    //     Err(e) => println!("Error: {}", e),
-    // }
-
-    if let Some(task) = repo.list_tasks().get(0) {
-        println!("{:?}", task);
     }
 
-    if let Some(task) = repo.list_tasks().get(1) {
-        println!("{:?}", task);
-    }
+    let mut dirty = false;
 
-    // Persist to file
-    if let Err(e) = repo.save_to_path(path) {
-        eprint!("Failed to save tasks: {}", e);
-    } else {
-        println!("Saved tasks to {}", path);
+    match cli.command {
+        Commands::Add { name, description, tags, status } => {}
+        Commands::List { status, tag, json } => {}
+        Commands::Show { id, json } => {}
+        Commands::Complete { id } => {}
+        Commands::Update { id, name, description, tags, status } => {}
+        Commands::Remove { id } => {}
+        }
+
+        // Save only if task was mutated.
+        if dirty {
+            if let Err(e) = repo.save_to_path(&cli.data) {
+                eprint!("Failed to save {}: {e}", cli.data.display());
+        }
     }
 }
