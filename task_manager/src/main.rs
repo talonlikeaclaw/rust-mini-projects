@@ -131,33 +131,67 @@ fn main() {
     let mut repo: TaskRepo = match TaskRepo::load_from_path(&cli.data) {
         Ok(r) => r,
         Err(_) => TaskRepo::new(),
-    }
+    };
 
     let mut dirty = false;
 
     match cli.command {
-        Commands::Add { name, description, tags, status } => {}
+        Commands::Add {
+            name,
+            description,
+            tags,
+            status,
+        } => {}
         Commands::List { status, tag, json } => {}
         Commands::Show { id, json } => {}
         Commands::Complete { id } => {}
-        Commands::Update { id, name, description, tags, status } => {}
+        Commands::Update {
+            id,
+            name,
+            description,
+            tags,
+            status,
+        } => {}
         Commands::Remove { id } => {}
-        }
+    }
 
-        // Save only if task was mutated.
-        if dirty {
-            if let Err(e) = repo.save_to_path(&cli.data) {
-                eprint!("Failed to save {}: {e}", cli.data.display());
+    // Save only if task was mutated.
+    if dirty {
+        if let Err(e) = repo.save_to_path(&cli.data) {
+            eprint!("Failed to save {}: {e}", cli.data.display());
         }
+    }
+}
+
+fn print_table(tasks: &[&Task]) {
+    if tasks.is_empty() {
+        println!("(no tasks)");
+        return;
+    }
+
+    println!("{:<4}  {:<12}  {:<10}  {}", "ID", "STATUS", "NAME", "TAGS");
+
+    for t in tasks {
+        let mut tags: Vec<&str> = t.tags.iter().map(String::as_str).collect();
+        tags.sort_unstable();
+        let tags_str = tags.join(",");
+
+        println!(
+            "{:<4}  {:<12}  {:<10}  {}",
+            t.id,
+            fmt_status(&t.status),
+            t.name,
+            tags_str
+        );
     }
 }
 
 /// Formats a status enum as a str.
 fn fmt_status(s: &Status) -> &'static str {
-      match s {
-          Status::Upcoming => "Upcoming",
-          Status::InProgress => "InProgress",
-          Status::Complete => "Complete",
-          Status::StandBy => "StandBy",
-      }
+    match s {
+        Status::Upcoming => "Upcoming",
+        Status::InProgress => "InProgress",
+        Status::Complete => "Complete",
+        Status::StandBy => "StandBy",
+    }
 }
