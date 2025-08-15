@@ -28,7 +28,15 @@ struct Task {
     name: String,
     description: String,
     tags: HashSet<String>,
-    done: bool,
+    status: Status,
+}
+
+#[derive(Debug, Clone)]
+enum Status {
+    Upcoming,
+    InProgress,
+    Complete,
+    StandBy,
 }
 
 /// Represents the list of tasks.
@@ -53,7 +61,7 @@ impl TaskRepo {
             name,
             description,
             tags: tags.into_iter().collect(),
-            done: false,
+            status: Status::Upcoming,
         };
         self.tasks.insert(self.next_id, task);
         self.next_id += 1;
@@ -79,6 +87,7 @@ impl TaskRepo {
         new_name: Option<String>,
         new_description: Option<String>,
         new_tags: Option<Vec<String>>,
+        new_status: Option<Status>,
     ) {
         if let Some(task) = self.tasks.get_mut(&task_id) {
             if let Some(name) = new_name {
@@ -90,13 +99,16 @@ impl TaskRepo {
             if let Some(tags) = new_tags {
                 task.tags = tags.into_iter().collect();
             }
+            if let Some(status) = new_status {
+                task.status = status;
+            }
         }
     }
 
     /// Updates a task's done field to true.
     fn complete_task(&mut self, task_id: u32) -> Result<(), Error> {
         if let Some(task) = self.tasks.get_mut(&task_id) {
-            task.done == true;
+            task.status = Status::Complete;
             Ok(())
         } else {
             Err(Error::new(std::io::ErrorKind::NotFound, "Task not found!"))
