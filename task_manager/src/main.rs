@@ -169,7 +169,15 @@ fn main() {
                 print_table(&tasks);
             }
         }
-        Commands::Show { id, json } => {}
+        Commands::Show { id, json } => match repo.tasks.get(&id) {
+            Some(t) if json => {
+                println!("{}", serde_json::to_string_pretty(&t).unwrap());
+            }
+            Some(t) => {
+                print_table(&vec![t]);
+            }
+            None => eprintln!("Task #{id} not found"),
+        },
         Commands::Complete { id } => {}
         Commands::Update {
             id,
@@ -184,7 +192,7 @@ fn main() {
     // Save only if task was mutated.
     if dirty {
         if let Err(e) = repo.save_to_path(&cli.data) {
-            eprint!("Failed to save {}: {e}", cli.data.display());
+            eprintln!("Failed to save {}: {e}", cli.data.display());
         }
     }
 }
