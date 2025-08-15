@@ -88,9 +88,18 @@ enum Commands {
         json: bool,
     },
 
-    Complete {},
+    /// Mark a task as complete
+    Complete {
+        /// The id of the task to complete.
+        id: u32,
+    },
     Update {},
-    Remove {},
+
+    /// Remove a task by id
+    Remove {
+        /// The id of the task to remove.
+        id: u32,
+    },
 }
 
 fn main() {
