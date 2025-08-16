@@ -119,7 +119,16 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_add_task() {
+    fn test_new_initial_state() {
+        // arrange & act
+        let repo = TaskRepo::new();
+        // assert
+        assert_eq!(repo.next_id, 1);
+        assert!(repo.tasks.is_empty());
+    }
+
+    #[test]
+    fn test_add_task_creates_entry() {
         // arrange
         let mut repo = TaskRepo::new();
         // act
@@ -132,5 +141,8 @@ mod test {
         assert_eq!(repo.tasks.len(), 1);
         let task = repo.tasks.get(&1).expect("task should exist");
         assert_eq!(task.name, "Buy milk");
+        assert_eq!(task.description, "From IGA");
+        assert_eq!(task.tags, HashSet::from(["groceries".to_string()]));
+        assert_eq!(task.status, Status::Upcoming);
     }
 }
