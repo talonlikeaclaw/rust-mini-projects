@@ -183,4 +183,18 @@ mod test {
         assert_eq!(t.tags, HashSet::from(["new".to_string()]));
         assert_eq!(t.status, Status::Complete);
     }
+
+    #[test]
+    fn test_update_task_partial() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        repo.add_task("Task".into(), "desc".into(), vec![]);
+        // act
+        let res = repo.update_task(1, Some("Renamed".into()), None, None, None);
+        // assert
+        let t = repo.tasks.get(&1).unwrap();
+        assert!(res.is_ok());
+        assert_eq!(t.name, "Renamed");
+        assert_eq!(t.description, "desc");
+    }
 }
