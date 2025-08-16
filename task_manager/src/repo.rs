@@ -212,7 +212,7 @@ mod test {
     }
 
     #[test]
-    fn complete_task_not_found() {
+    fn test_complete_task_not_found() {
         // arrange
         let mut repo = TaskRepo::new();
         // act
@@ -232,5 +232,15 @@ mod test {
         // assert
         assert!(res.is_ok());
         assert!(repo.tasks.is_empty());
+    }
+
+    #[test]
+    fn test_remove_task_not_found() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        // act
+        let err = repo.remove_task(1);
+        // assert
+        assert_eq!(err.unwrap_err().kind(), std::io::ErrorKind::NotFound);
     }
 }
