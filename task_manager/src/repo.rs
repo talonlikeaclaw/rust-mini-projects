@@ -145,4 +145,20 @@ mod test {
         assert_eq!(task.tags, HashSet::from(["groceries".to_string()]));
         assert_eq!(task.status, Status::Upcoming);
     }
+
+    #[test]
+    fn test_list_tasks_return_sorted_by_id() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        repo.add_task("A".into(), "1".into(), vec![]);
+        repo.add_task("B".into(), "2".into(), vec![]);
+        repo.add_task("C".into(), "3".into(), vec![]);
+        // act
+        let list = repo.list_tasks();
+        // assert
+        assert_eq!(list.len(), 3);
+        assert_eq!(list[0].id, 1);
+        assert_eq!(list[1].id, 2);
+        assert_eq!(list[2].id, 3);
+    }
 }
