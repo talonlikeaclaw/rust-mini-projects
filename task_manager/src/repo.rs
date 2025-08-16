@@ -220,4 +220,17 @@ mod test {
         // assert
         assert_eq!(err.unwrap_err().kind(), std::io::ErrorKind::NotFound);
     }
+
+    #[test]
+    fn test_remove_task_success() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        repo.add_task("Keep".into(), "".into(), vec![]);
+        assert_eq!(repo.tasks.len(), 1);
+        // act
+        let res = repo.remove_task(1);
+        // assert
+        assert!(res.is_ok());
+        assert!(repo.tasks.is_empty());
+    }
 }
