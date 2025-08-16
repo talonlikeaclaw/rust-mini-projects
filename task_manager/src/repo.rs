@@ -197,4 +197,17 @@ mod test {
         assert_eq!(t.name, "Renamed");
         assert_eq!(t.description, "desc");
     }
+
+    #[test]
+    fn test_complete_task_success() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        repo.add_task("Todo".into(), "do it".into(), vec![]);
+        // act
+        let res = repo.complete_task(1);
+        // assert
+        assert!(res.is_ok());
+        let t = repo.tasks.get(&1).unwrap();
+        assert_eq!(t.status, Status::Complete);
+    }
 }
