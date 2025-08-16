@@ -210,4 +210,14 @@ mod test {
         let t = repo.tasks.get(&1).unwrap();
         assert_eq!(t.status, Status::Complete);
     }
+
+    #[test]
+    fn complete_task_not_found() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        // act
+        let err = repo.complete_task(1);
+        // assert
+        assert_eq!(err.unwrap_err().kind(), std::io::ErrorKind::NotFound);
+    }
 }
