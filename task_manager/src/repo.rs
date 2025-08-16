@@ -161,4 +161,26 @@ mod test {
         assert_eq!(list[1].id, 2);
         assert_eq!(list[2].id, 3);
     }
+
+    #[test]
+    fn test_update_task_all_fields() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        repo.add_task("Old".into(), "desc".into(), vec!["old".into()]);
+        // act
+        let res = repo.update_task(
+            1,
+            Some("New".into()),
+            Some("changed".into()),
+            Some(vec!["new".into()]),
+            Some(Status::Complete),
+        );
+        // assert
+        assert!(res.is_ok());
+        let t = repo.tasks.get(&1).unwrap();
+        assert_eq!(t.name, "New");
+        assert_eq!(t.description, "changed");
+        assert_eq!(t.tags, HashSet::from(["new".to_string()]));
+        assert_eq!(t.status, Status::Complete);
+    }
 }
