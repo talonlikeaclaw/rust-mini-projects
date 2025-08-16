@@ -113,3 +113,24 @@ impl TaskRepo {
         Ok(repo)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_add_task() {
+        // arrange
+        let mut repo = TaskRepo::new();
+        // act
+        repo.add_task(
+            "Buy milk".into(),
+            "From IGA".into(),
+            vec!["groceries".into()],
+        );
+        // assert
+        assert_eq!(repo.tasks.len(), 1);
+        let task = repo.tasks.get(&1).expect("task should exist");
+        assert_eq!(task.name, "Buy milk");
+    }
+}
