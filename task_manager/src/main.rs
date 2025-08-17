@@ -34,7 +34,7 @@ impl From<StatusArg> for Status {
 }
 
 #[derive(Parser, Debug)]
-#[command(name = "tasks", version, about = "A tiny task tracker!")]
+#[command(name = "tasks", version, about = "A tiny task manager!")]
 struct Cli {
     /// Path to the data file (JSON)
     #[arg(short = 'f', long = "file", default_value = "tasks.json")]
