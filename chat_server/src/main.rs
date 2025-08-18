@@ -2,6 +2,12 @@ use std::io::{Read, Write};
 use std::net::{Ipv4Addr, SocketAddrV4, TcpListener, TcpStream};
 use std::thread;
 
+#[derive(Debug)]
+struct Client {
+    stream: TcpStream,
+    address: String,
+}
+
 fn handle_client(mut stream: TcpStream) {
     println!("Handling client connection!");
 
