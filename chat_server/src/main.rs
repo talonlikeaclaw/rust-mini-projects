@@ -44,11 +44,7 @@ fn handle_client(
                 let message = String::from_utf8_lossy(&buffer[..n]);
                 println!("Received from {}: {}", address, message.trim());
 
-                // Echo the message back to client
-                let response = format!("Echo: {}\n", message);
-                if stream.write(response.as_bytes()).is_err() {
-                    break; // Client disconnect
-                }
+                broadcast_message(&clients, &address, &message);
             }
             Err(_) => {
                 println!("Error reading from client {}", address);
@@ -58,6 +54,34 @@ fn handle_client(
     }
 
     println!("Client handler thread ending for {}", address);
+}
+
+fn broadcast_message(
+    clients: &Arc<Mutex<HashMap<String, Client>>>,
+    sender_address: &str,
+    message: &str,
+) {
+    // Copy addresses to avoid lock issues
+    let addresses: Vec<String> = {
+        let client_list = clients.lock().unwrap();
+        client_list.keys().cloned().collect()
+    };
+
+    let full_message = format!("{}: {}\n", sender_address, message.trim());
+
+    for address in addresses {
+        if address != sender_address {
+            let mut client_list = clients.lock().unwrap(); // Lock for each
+
+            if let Some(client) = client_list.get_mut(&address) {
+                if client.stream.write(full_message.as_bytes()).is_err() {
+                    // TODO: Handle write error
+                }
+            }
+            // Lock is released here
+        }
+    }
+    // And here
 }
 
 fn main() -> std::io::Result<()> {
