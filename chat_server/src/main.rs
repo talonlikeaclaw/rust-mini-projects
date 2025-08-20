@@ -16,22 +16,54 @@ fn handle_client(
     mut stream: TcpStream,
     address: String,
 ) {
-    println!("Client {} connected", address);
+    let mut reader = io::BufReader::new(stream.try_clone().expect("stream clone"));
+    // Send prompt
+    stream.write_all(b"Enter username: ").expect("write");
+    loop {
+        let mut line_buf = String::new();
+        match reader.read_line(&mut line_buf) {
+            Ok(0) => {
+                /* client closed before giving a nick */
+                break;
+            }
+            Ok(_) => {
+                let nick = line_buf.trim().to_string();
 
-    let client = Client {
-        stream: stream.try_clone().expect("Failed to clone stream"),
-        address: address.clone(),
-        username: None, // TODO: implement username feature
-    };
+                // reject empty names or names already taken
+                if nick.is_empty() {
+                    stream.write_all(b"Name cannot be empty\n").unwrap();
+                    continue;
+                }
 
-    // Add client to shared list
-    {
-        let mut client_list = clients.lock().unwrap();
-        client_list.insert(address.clone(), client);
+                // check uniqueness in the shared map
+                let mut clist = clients.lock().unwrap();
+                if clist.values().any(|c| c.username.as_deref() == Some(&nick)) {
+                    stream
+                        .write_all(b"Name already taken, try another\n")
+                        .unwrap();
+                    continue;
+                }
+
+                // we have a valid nick → store it and break the loop
+                let client = Client {
+                    stream: stream.try_clone().expect("stream clone"),
+                    address: address.clone(),
+                    username: Some(nick.clone()),
+                };
+                clist.insert(address.clone(), client);
+                drop(clist); // unlock before continuing
+
+                stream.write_all(b"Welcome!\n").unwrap();
+                break;
+            }
+            Err(_) => {
+                println!("Error reading nick from {}", address);
+                return;
+            }
+        }
     }
 
-    let mut buffer = [0; 1024];
-
+    let mut buffer = [0u8; 1024];
     loop {
         match stream.read(&mut buffer) {
             Ok(0) => {
@@ -40,14 +72,14 @@ fn handle_client(
                 break;
             }
             Ok(n) => {
-                // Convert bytes to string and print
-                let message = String::from_utf8_lossy(&buffer[..n]);
-                println!("Received from {}: {}", address, message.trim());
-
-                broadcast_message(&clients, &address, &message);
+                let msg = String::from_utf8_lossy(&buffer[..n]);
+                // If the client sent nothing but a newline we ignore it
+                if !msg.trim().is_empty() {
+                    broadcast_message(&clients, &address, &msg);
+                }
             }
             Err(_) => {
-                println!("Error reading from client {}", address);
+                println!("Error reading from {}", address);
                 break;
             }
         }
