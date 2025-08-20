@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::io::{Read, Write};
+use std::io::{self, BufRead, Read, Write};
 use std::net::{Ipv4Addr, SocketAddrV4, TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -93,27 +93,36 @@ fn broadcast_message(
     sender_address: &str,
     message: &str,
 ) {
-    // Copy addresses to avoid lock issues
-    let addresses: Vec<String> = {
-        let client_list = clients.lock().unwrap();
-        client_list.keys().cloned().collect()
+    // Grab the nickname of the sender (if available)
+    let sender_nick = {
+        let clist = clients.lock().unwrap();
+        clist
+            .get(sender_address)
+            .and_then(|c| c.username.as_deref())
+            .map(ToString::to_string)
+            .unwrap_or_else(|| sender_address.to_owned())
     };
 
-    let full_message = format!("{}: {}\n", sender_address, message.trim());
+    // Prepare the full text that will be sent
+    let full_message = format!("{}: {}\n", sender_nick, message.trim());
+
+    // Get a snapshot of all addresses – we hold only one lock at a time.
+    let addresses: Vec<String> = {
+        let clist = clients.lock().unwrap();
+        clist.keys().cloned().collect()
+    };
 
     for address in addresses {
         if address != sender_address {
-            let mut client_list = clients.lock().unwrap(); // Lock for each
-
-            if let Some(client) = client_list.get_mut(&address) {
-                if client.stream.write(full_message.as_bytes()).is_err() {
-                    // TODO: Handle write error
+            let mut clist = clients.lock().unwrap(); // re‑lock for each write
+            if let Some(client) = clist.get_mut(&address) {
+                match client.stream.write(full_message.as_bytes()) {
+                    Ok(_) => {}
+                    Err(e) => println!("Failed to send to {}: {}", address, e),
                 }
             }
-            // Lock is released here
         }
     }
-    // And here
 }
 
 fn main() -> std::io::Result<()> {
